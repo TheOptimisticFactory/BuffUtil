@@ -54,6 +54,11 @@ namespace BuffUtil
             ScourgeArrowUseLeftClick = new ToggleNode(false);
             ScourgeArrowWaitForInfused = new ToggleNode(true);
 
+            EnduringCry = new ToggleNode(false);
+            EnduringCryKey = new HotkeyNode(Keys.W);
+            EnduringCryConnectedSkill = new RangeNode<int>(1, 1, 13);
+            EnduringCryMaxHP = new RangeNode<int>(100, 0, 100);
+
             RequireMinMonsterCount = new ToggleNode(false);
             NearbyMonsterCount = new RangeNode<int>(1, 1, 30);
             NearbyMonsterMaxDistance = new RangeNode<int>(500, 1, 2000);
@@ -136,10 +141,10 @@ namespace BuffUtil
 
         [Menu("Max HP", "HP percent above which skill is not cast", 53, 5)]
         public RangeNode<int> PhaseRunMaxHP { get; set; }
-            
+
         [Menu("Move time", "Time in ms spent moving after which skill can be cast", 54, 5)]
         public RangeNode<int> PhaseRunMinMoveTime { get; set; }
-            
+
         [Menu("BV Stacks", "Blade Vortex stacks required to cast Phase Run", 55, 5)]
         public RangeNode<int> PhaseRunMinBVStacks { get; set; }
 
@@ -189,6 +194,20 @@ namespace BuffUtil
         
         [Menu("Wait for Infused Channeling buff", "Wait for Infused Channeling buff before release", 83, 8)] 
         public ToggleNode ScourgeArrowWaitForInfused { get; set; }
+        #endregion
+
+        #region Enduring Cry
+
+        [Menu("Enduring Cry", 9)] public ToggleNode EnduringCry { get; set; }
+
+        [Menu("Enduring Cry Key", 91, 9)] public HotkeyNode EnduringCryKey { get; set; }
+
+        [Menu("Connected Skill", "Set the skill slot (1 = top left, 8 = bottom right)", 92, 9)]
+        public RangeNode<int> EnduringCryConnectedSkill { get; set; }
+
+        [Menu("Max HP", "HP percent above which skill is not cast", 93, 9)]
+        public RangeNode<int> EnduringCryMaxHP { get; set; }
+
         #endregion
 
         #region Misc

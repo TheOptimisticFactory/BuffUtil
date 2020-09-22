@@ -37,6 +37,15 @@ namespace BuffUtil
             public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
         }
 
+        public static class EnduringCry
+        {
+            public const string BuffName = "enduring_cry_endurance_charge_benefits";
+            public const string BuffName2 = "usemax_life_regen";
+            public const string Name = "EnduringCry";
+            public const string InternalName = "enduring_cry";
+            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(6.61);
+        }
+
         public static class WitheringStep
         {
             public const string BuffName = "slither";

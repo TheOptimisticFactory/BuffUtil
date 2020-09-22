@@ -27,6 +27,7 @@ namespace BuffUtil
         private DateTime? lastSteelSkinCast;
         private DateTime? lastImmortalCallCast;
         private DateTime? lastMoltenShellCast;
+        private DateTime? lastEnduringCryCast;
         private float HPPercent;
         private float MPPercent;
         private int? nearbyMonsterCount;
@@ -73,7 +74,9 @@ namespace BuffUtil
                 HandleImmortalCall();
                 HandleMoltenShell();
                 HandlePhaseRun();
+                HandlePhaseRun();
                 HandleWitheringStep();
+                HandleEnduringCry();
             }
             catch (Exception ex)
             {
@@ -381,13 +384,53 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting Phase Run", 1);
-                inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.PhaseRunKey.Value);
+                inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.PhaseRunKey.Value);
                 lastPhaseRunCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
             catch (Exception ex)
             {
                 if (showErrors)
                     LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleSteelSkin)}: {ex.StackTrace}", 3f);
+            }
+        }
+
+        private void HandleEnduringCry()
+        {
+            try
+            {
+                if (!Settings.EnduringCry)
+                    return;
+
+                if (lastEnduringCryCast.HasValue && currentTime - lastEnduringCryCast.Value < C.EnduringCry.TimeBetweenCasts)
+                    return;
+
+                if (HPPercent > Settings.EnduringCryMaxHP.Value)
+                    return;
+
+                var hasBuff = HasBuff(C.EnduringCry.BuffName);
+                if (!hasBuff.HasValue || hasBuff.Value)
+                    return;
+
+                var skill = GetUsableSkill(C.EnduringCry.Name, C.EnduringCry.InternalName, Settings.EnduringCryConnectedSkill.Value);
+                if (skill == null)
+                {
+                    if (Settings.Debug)
+                        LogMessage("Can not cast Enduring Cry - not found in usable skills.", 1);
+                    return;
+                }
+
+                if (!NearbyMonsterCheck())
+                    return;
+
+                if (Settings.Debug)
+                    LogMessage("Casting Enduring Cry", 1);
+                inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.EnduringCryKey.Value);
+                lastEnduringCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+            }
+            catch (Exception ex)
+            {
+                if (showErrors)
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleEnduringCry)}: {ex.StackTrace}", 3f);
             }
         }
 
