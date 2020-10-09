@@ -27,7 +27,7 @@ namespace BuffUtil
         private DateTime? lastSteelSkinCast;
         private DateTime? lastImmortalCallCast;
         private DateTime? lastMoltenShellCast;
-        private DateTime? lastEnduringCryCast;
+        private DateTime? lastGolemCast;
         private float HPPercent;
         private float MPPercent;
         private int? nearbyMonsterCount;
@@ -76,7 +76,7 @@ namespace BuffUtil
                 HandlePhaseRun();
                 HandlePhaseRun();
                 HandleWitheringStep();
-                HandleEnduringCry();
+                HandleFlameGolem();
             }
             catch (Exception ex)
             {
@@ -394,43 +394,37 @@ namespace BuffUtil
             }
         }
 
-        private void HandleEnduringCry()
+        private void HandleFlameGolem()
         {
             try
             {
-                if (!Settings.EnduringCry)
+                if (!Settings.FlameGolem)
                     return;
 
-                if (lastEnduringCryCast.HasValue && currentTime - lastEnduringCryCast.Value < C.EnduringCry.TimeBetweenCasts)
+                if (lastGolemCast.HasValue && currentTime - lastGolemCast.Value < C.FlameGolem.TimeBetweenCasts)
                     return;
 
-                if (HPPercent > Settings.EnduringCryMaxHP.Value)
-                    return;
-
-                var hasBuff = HasBuff(C.EnduringCry.BuffName);
+                var hasBuff = HasBuff(C.FlameGolem.BuffName);
                 if (!hasBuff.HasValue || hasBuff.Value)
                     return;
 
-                var skill = GetUsableSkill(C.EnduringCry.Name, C.EnduringCry.InternalName, Settings.EnduringCryConnectedSkill.Value);
+                var skill = GetUsableSkill(C.FlameGolem.Name, C.FlameGolem.InternalName, Settings.FlameGolemConnectedSkill.Value);
                 if (skill == null)
                 {
                     if (Settings.Debug)
-                        LogMessage("Can not cast Enduring Cry - not found in usable skills.", 1);
+                        LogMessage("Can not cast Golem - not found in usable skills.", 1);
                     return;
                 }
 
-                if (!NearbyMonsterCheck())
-                    return;
-
                 if (Settings.Debug)
-                    LogMessage("Casting Enduring Cry", 1);
-                inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.EnduringCryKey.Value);
-                lastEnduringCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+                    LogMessage("Casting Golem", 1);
+                inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.FlameGolemKey.Value);
+                lastGolemCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
             catch (Exception ex)
             {
                 if (showErrors)
-                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleEnduringCry)}: {ex.StackTrace}", 3f);
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleFlameGolem)}: {ex.StackTrace}", 3f);
             }
         }
 

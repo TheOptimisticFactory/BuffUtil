@@ -31,6 +31,11 @@ namespace BuffUtil
             MoltenShellConnectedSkill = new RangeNode<int>(1, 1, 13);
             MoltenShellMaxHP = new RangeNode<int>(50, 0, 100);
 
+            MoltenShell = new ToggleNode(false);
+            MoltenShellKey = new HotkeyNode(Keys.Q);
+            MoltenShellConnectedSkill = new RangeNode<int>(1, 1, 13);
+            MoltenShellMaxHP = new RangeNode<int>(50, 0, 100);
+
             PhaseRun = new ToggleNode(false);
             PhaseRunKey = new HotkeyNode(Keys.R);
             PhaseRunConnectedSkill = new RangeNode<int>(1, 1, 13);
@@ -54,10 +59,9 @@ namespace BuffUtil
             ScourgeArrowUseLeftClick = new ToggleNode(false);
             ScourgeArrowWaitForInfused = new ToggleNode(true);
 
-            EnduringCry = new ToggleNode(false);
-            EnduringCryKey = new HotkeyNode(Keys.W);
-            EnduringCryConnectedSkill = new RangeNode<int>(1, 1, 13);
-            EnduringCryMaxHP = new RangeNode<int>(100, 0, 100);
+            FlameGolem = new ToggleNode(false);
+            FlameGolemKey = new HotkeyNode(Keys.Q);
+            FlameGolemConnectedSkill = new RangeNode<int>(1, 1, 13);
 
             RequireMinMonsterCount = new ToggleNode(false);
             NearbyMonsterCount = new RangeNode<int>(1, 1, 30);
@@ -196,17 +200,14 @@ namespace BuffUtil
         public ToggleNode ScourgeArrowWaitForInfused { get; set; }
         #endregion
 
-        #region Enduring Cry
+        #region Flame Golem
 
-        [Menu("Enduring Cry", 9)] public ToggleNode EnduringCry { get; set; }
+        [Menu("Flame Golem", 9)] public ToggleNode FlameGolem { get; set; }
 
-        [Menu("Enduring Cry Key", 91, 9)] public HotkeyNode EnduringCryKey { get; set; }
+        [Menu("Flame Golem Key", 91, 9)] public HotkeyNode FlameGolemKey { get; set; }
 
         [Menu("Connected Skill", "Set the skill slot (1 = top left, 8 = bottom right)", 92, 9)]
-        public RangeNode<int> EnduringCryConnectedSkill { get; set; }
-
-        [Menu("Max HP", "HP percent above which skill is not cast", 93, 9)]
-        public RangeNode<int> EnduringCryMaxHP { get; set; }
+        public RangeNode<int> FlameGolemConnectedSkill { get; set; }
 
         #endregion
 

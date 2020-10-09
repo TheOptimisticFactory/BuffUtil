@@ -37,13 +37,12 @@ namespace BuffUtil
             public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
         }
 
-        public static class EnduringCry
+        public static class FlameGolem
         {
-            public const string BuffName = "enduring_cry_endurance_charge_benefits";
-            public const string BuffName2 = "usemax_life_regen";
-            public const string Name = "EnduringCry";
-            public const string InternalName = "enduring_cry";
-            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(6.61);
+            public const string BuffName = "fire_elemental_buff";
+            public const string Name = "SummonFireGolem";
+            public const string InternalName = "summon_fire_elemental";
+            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(6);
         }
 
         public static class WitheringStep
