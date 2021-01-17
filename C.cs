@@ -4,6 +4,14 @@ namespace BuffUtil
 {
     public static class C
     {
+        public static class BloodRage
+        {
+            public const string BuffName = "blood_rage";
+            public const string Name = "BloodRage";
+            public const string InternalName = "blood_rage";
+            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
+        }
+
         public static class SteelSkin
         {
             public const string BuffName = "steelskin";
@@ -45,45 +53,25 @@ namespace BuffUtil
             public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(6);
         }
 
-        public static class WitheringStep
+        public static class BoneOffering
         {
-            public const string BuffName = "slither";
-            public const string Name = "Slither";
-            public const string InternalName = "slither";
-            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(3);
+            public const string BuffName = "offering_defensive";
+            public const string Name = "BoneOffering";
+            public const string InternalName = "bone_offering";
+            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(7.5);
         }
 
-        public static class BloodRage
+        public static class GeneralsCry
         {
-            public const string BuffName = "blood_rage";
-            public const string Name = "BloodRage";
-            public const string InternalName = "blood_rage";
-            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
-        }
-
-        public static class BladeFlurry
-        {
-            public const string BuffName = "charged_attack";
-        }
-
-        public static class ScourgeArrow
-        {
-            public const string BuffName = "virulent_arrow_counter";
-        }
-
-        public static class InfusedChanneling
-        {
-            public const string BuffName = "storm_barrier_support_damage";
+            public const string BuffName = "fortify";
+            public const string Name = "GeneralsCry";
+            public const string InternalName = "spiritual_cry";
+            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(6);
         }
 
         public static class GracePeriod
         {
             public const string BuffName = "grace_period";
-        }
-
-        public static class BladeVortex
-        {
-            public const string BuffName = "blade_vortex_counter";
         }
     }
 }

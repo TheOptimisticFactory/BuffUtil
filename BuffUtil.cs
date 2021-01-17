@@ -22,15 +22,17 @@ namespace BuffUtil
         private InputSimulator inputSimulator;
         private Random rand;
         private DateTime? lastBloodRageCast;
-        private DateTime? lastPhaseRunCast;
-        private DateTime? lastWitheringStepCast;
         private DateTime? lastSteelSkinCast;
         private DateTime? lastImmortalCallCast;
         private DateTime? lastMoltenShellCast;
+        private DateTime? lastPhaseRunCast;
         private DateTime? lastGolemCast;
+        private DateTime? lastBoneOfferingCast;
+        private DateTime? lastGeneralsCryCast;
         private float HPPercent;
         private float MPPercent;
         private int? nearbyMonsterCount;
+        private int? nearbyCorpseCount;
         private bool showErrors = true;
         private Stopwatch movementStopwatch { get; set; } = new Stopwatch();
 
@@ -67,15 +69,13 @@ namespace BuffUtil
         {
             try
             {
-                HandleBladeFlurry();
-                HandleScourgeArrow();
+                HandleBoneOffering();
+                HandleGeneralsCry();
                 HandleBloodRage();
                 HandleSteelSkin();
                 HandleImmortalCall();
                 HandleMoltenShell();
                 HandlePhaseRun();
-                HandlePhaseRun();
-                HandleWitheringStep();
                 HandleFlameGolem();
             }
             catch (Exception ex)
@@ -84,92 +84,6 @@ namespace BuffUtil
                 {
                     LogError($"Exception in {nameof(BuffUtil)}.{nameof(OnExecute)}: {ex.StackTrace}", 3f);
                 }
-            }
-        }
-
-        private void HandleBladeFlurry()
-        {
-            try
-            {
-                if (!Settings.BladeFlurry)
-                    return;
-
-                var stacksBuff = GetBuff(C.BladeFlurry.BuffName);
-                if (stacksBuff == null)
-                    return;
-
-                var charges = stacksBuff.Charges;
-                if (charges < Settings.BladeFlurryMinCharges.Value)
-                    return;
-
-                if (Settings.BladeFlurryWaitForInfused)
-                {
-                    var hasInfusedBuff = HasBuff(C.InfusedChanneling.BuffName);
-                    if (!hasInfusedBuff.HasValue || !hasInfusedBuff.Value)
-                        return;
-                }
-
-                if (Settings.Debug)
-                    LogMessage($"Releasing Blade Flurry at {charges} charges.", 1);
-
-                if (Settings.BladeFlurryUseLeftClick)
-                {
-                    inputSimulator.Mouse.LeftButtonUp();
-                    inputSimulator.Mouse.LeftButtonDown();
-                }
-                else
-                {
-                    inputSimulator.Mouse.RightButtonUp();
-                    inputSimulator.Mouse.RightButtonDown();
-                }
-            }
-            catch (Exception ex)
-            {
-                if (showErrors)
-                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleBloodRage)}: {ex.StackTrace}", 3f);
-            }
-        }
-
-        private void HandleScourgeArrow()
-        {
-            try
-            {
-                if (!Settings.ScourgeArrow)
-                    return;
-
-                var stacksBuff = GetBuff(C.ScourgeArrow.BuffName);
-                if (stacksBuff == null)
-                    return;
-
-                var charges = stacksBuff.Charges;
-                if (charges < Settings.ScourgeArrowMinCharges.Value)
-                    return;
-
-                if (Settings.ScourgeArrowWaitForInfused)
-                {
-                    var hasInfusedBuff = HasBuff(C.InfusedChanneling.BuffName);
-                    if (!hasInfusedBuff.HasValue || !hasInfusedBuff.Value)
-                        return;
-                }
-
-                if (Settings.Debug)
-                    LogMessage($"Releasing Scourge Arrow at {charges} charges.", 1);
-
-                if (Settings.ScourgeArrowUseLeftClick)
-                {
-                    inputSimulator.Mouse.LeftButtonUp();
-                    inputSimulator.Mouse.LeftButtonDown();
-                }
-                else
-                {
-                    inputSimulator.Mouse.RightButtonUp();
-                    inputSimulator.Mouse.RightButtonDown();
-                }
-            }
-            catch (Exception ex)
-            {
-                if (showErrors)
-                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleScourgeArrow)}: {ex.StackTrace}", 3f);
             }
         }
 
@@ -362,14 +276,6 @@ namespace BuffUtil
                 if (!hasBuff.HasValue || hasBuff.Value)
                     return;
 
-                var requiredBVStacks = Settings.PhaseRunMinBVStacks.Value;
-                if (requiredBVStacks > 0)
-                {
-                    var bvBuff = GetBuff(C.BladeVortex.BuffName);
-                    if (bvBuff == null || bvBuff.Charges < requiredBVStacks)
-                        return;
-                }
-
                 var skill = GetUsableSkill(C.PhaseRun.Name, C.PhaseRun.InternalName,
                     Settings.PhaseRunConnectedSkill.Value);
                 if (skill == null)
@@ -428,48 +334,77 @@ namespace BuffUtil
             }
         }
 
-        private void HandleWitheringStep()
+        private void HandleBoneOffering()
         {
             try
             {
-                if (!Settings.WitheringStep)
+                if (!Settings.BoneOffering)
                     return;
 
-                if (lastWitheringStepCast.HasValue && currentTime - lastWitheringStepCast.Value <
-                    C.WitheringStep.TimeBetweenCasts)
+                if (lastBoneOfferingCast.HasValue && currentTime - lastBoneOfferingCast.Value < C.BoneOffering.TimeBetweenCasts)
                     return;
 
-                if (HPPercent > Settings.WitheringStepMaxHP.Value)
-                    return;
-
-                if (movementStopwatch.ElapsedMilliseconds < Settings.WitheringStepMinMoveTime)
-                    return;
-
-                var hasBuff = HasBuff(C.WitheringStep.BuffName);
+                var hasBuff = HasBuff(C.BoneOffering.BuffName);
                 if (!hasBuff.HasValue || hasBuff.Value)
                     return;
 
-                var skill = GetUsableSkill(C.WitheringStep.Name, C.WitheringStep.InternalName,
-                    Settings.WitheringStepConnectedSkill.Value);
+                if (!NearbyCorpseCheck())
+                    return;
+
+                var skill = GetUsableSkill(C.BoneOffering.Name, C.BoneOffering.InternalName, Settings.BoneOfferingConnectedSkill.Value);
                 if (skill == null)
                 {
                     if (Settings.Debug)
-                        LogMessage("Can not cast Withering Step - not found in usable skills.", 1);
+                        LogMessage("Can not cast bone offering - not found in usable skills.", 1);
                     return;
                 }
 
-                if (!NearbyMonsterCheck())
-                    return;
-
                 if (Settings.Debug)
-                    LogMessage("Casting Withering Step", 1);
-                inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.WitheringStepKey.Value);
-                lastWitheringStepCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+                    LogMessage("Casting Bone Offering", 1);
+                inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.BoneOfferingKey.Value);
+                lastBoneOfferingCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
             catch (Exception ex)
             {
                 if (showErrors)
-                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleSteelSkin)}: {ex.StackTrace}", 3f);
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleFlameGolem)}: {ex.StackTrace}", 3f);
+            }
+        }
+
+        private void HandleGeneralsCry()
+        {
+            try
+            {
+                if (!Settings.GeneralsCry)
+                    return;
+
+                if (lastGeneralsCryCast.HasValue && currentTime - lastGeneralsCryCast.Value < C.GeneralsCry.TimeBetweenCasts)
+                    return;
+
+                var hasBuff = HasBuff(C.GeneralsCry.BuffName);
+                if (!hasBuff.HasValue || hasBuff.Value)
+                    return;
+
+                if (!NearbyCorpseCheck())
+                    return;
+
+                var skill = GetUsableSkill(C.GeneralsCry.Name, C.GeneralsCry.InternalName, Settings.BoneOfferingConnectedSkill.Value);
+                if (skill == null)
+                {
+                    if (Settings.Debug)
+                        LogMessage("Can not cast generals cry - not found in usable skills.", 1);
+                    return;
+                }
+
+                if (Settings.Debug)
+                    LogMessage("Casting General's Cry", 1);
+                inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.GeneralsCryKey.Value);
+                lastGeneralsCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+            }
+            catch (Exception ex)
+            {
+                if (showErrors)
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleFlameGolem)}: {ex.StackTrace}", 3f);
             }
         }
 
@@ -633,6 +568,56 @@ namespace BuffUtil
             {
                 if (showErrors)
                     LogError($"Exception in {nameof(BuffUtil)}.{nameof(IsValidNearbyMonster)}: {ex.StackTrace}", 3f);
+                return false;
+            }
+        }
+
+        private bool NearbyCorpseCheck()
+        {
+            if (nearbyCorpseCount.HasValue)
+                return nearbyCorpseCount.Value >= Settings.NearbyCorpseCount;
+
+            var playerPosition = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Render>().Pos;
+
+            List<Entity> localLoadedMonsters;
+            lock (loadedMonstersLock)
+            {
+                localLoadedMonsters = new List<Entity>(loadedMonsters);
+            }
+
+            var maxDistance = Settings.NearbyMonsterMaxDistance.Value;
+            var maxDistanceSquared = maxDistance * maxDistance;
+            var corpseCount = 0;
+            foreach (var monster in localLoadedMonsters)
+                if (IsValidNearbyCorpse(monster, playerPosition, maxDistanceSquared))
+                    corpseCount++;
+
+            nearbyCorpseCount = corpseCount;
+            var result = nearbyCorpseCount.Value >= Settings.NearbyCorpseCount;
+            if (Settings.Debug.Value && !result)
+                LogMessage("NearbyCorpseCheck failed.", 1);
+            return result;
+        }
+
+        private bool IsValidNearbyCorpse(Entity monster, Vector3 playerPosition, int maxDistanceSquared)
+        {
+            try
+            {
+                if (!monster.IsTargetable || monster.IsAlive || monster.IsHidden || !monster.IsValid)
+                    return false;
+
+                var monsterPosition = monster.Pos;
+
+                var xDiff = playerPosition.X - monsterPosition.X;
+                var yDiff = playerPosition.Y - monsterPosition.Y;
+                var monsterDistanceSquare = xDiff * xDiff + yDiff * yDiff;
+
+                return monsterDistanceSquare <= maxDistanceSquared;
+            }
+            catch (Exception ex)
+            {
+                if (showErrors)
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(IsValidNearbyCorpse)}: {ex.StackTrace}", 3f);
                 return false;
             }
         }
