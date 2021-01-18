@@ -50,7 +50,7 @@ namespace BuffUtil
             public const string BuffName = "fire_elemental_buff";
             public const string Name = "SummonFireGolem";
             public const string InternalName = "summon_fire_elemental";
-            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(6);
+            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
         }
 
         public static class BoneOffering
@@ -58,7 +58,7 @@ namespace BuffUtil
             public const string BuffName = "offering_defensive";
             public const string Name = "BoneOffering";
             public const string InternalName = "bone_offering";
-            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(7.5);
+            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
         }
 
         public static class GeneralsCry
@@ -66,7 +66,7 @@ namespace BuffUtil
             public const string BuffName = "fortify";
             public const string Name = "GeneralsCry";
             public const string InternalName = "spiritual_cry";
-            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(6);
+            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
         }
 
         public static class GracePeriod
