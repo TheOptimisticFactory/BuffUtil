@@ -9,54 +9,7 @@ namespace BuffUtil
     {
         public BuffUtilSettings()
         {
-<<<<<<< HEAD
             FlameGolemConnectedSkill = new RangeNode<int>(1, 1, 13);
-=======
-            Enable = new ToggleNode(false);
-            BloodRage = new ToggleNode(false);
-            BloodRageKey = new HotkeyNode(Keys.E);
-            BloodRageConnectedSkill = new RangeNode<int>(1, 1, 13);
-            BloodRageMaxHP = new RangeNode<int>(100, 0, 100);
-            BloodRageMaxMP = new RangeNode<int>(100, 0, 100);
-
-            SteelSkin = new ToggleNode(false);
-            SteelSkinKey = new HotkeyNode(Keys.W);
-            SteelSkinConnectedSkill = new RangeNode<int>(1, 1, 13);
-            SteelSkinMaxHP = new RangeNode<int>(90, 0, 100);
-
-            ImmortalCall = new ToggleNode(false);
-            ImmortalCallKey = new HotkeyNode(Keys.T);
-            ImmortalCallConnectedSkill = new RangeNode<int>(1, 1, 13);
-            ImmortalCallMaxHP = new RangeNode<int>(50, 0, 100);
-
-            MoltenShell = new ToggleNode(false);
-            MoltenShellKey = new HotkeyNode(Keys.Q);
-            MoltenShellConnectedSkill = new RangeNode<int>(1, 1, 13);
-            MoltenShellMaxHP = new RangeNode<int>(50, 0, 100);
-
-            PhaseRun = new ToggleNode(false);
-            PhaseRunKey = new HotkeyNode(Keys.R);
-            PhaseRunConnectedSkill = new RangeNode<int>(1, 1, 13);
-            PhaseRunMaxHP = new RangeNode<int>(90, 0, 100);
-            PhaseRunMinMoveTime = new RangeNode<int>(0, 0, 5000);
-            PhaseRunMinBVStacks = new RangeNode<int>(0, 0, 10);
-
-            WitheringStep = new ToggleNode(false);
-            WitheringStepKey = new HotkeyNode(Keys.R);
-            WitheringStepConnectedSkill = new RangeNode<int>(1, 1, 13);
-            WitheringStepMaxHP = new RangeNode<int>(90, 0, 100);
-            WitheringStepMinMoveTime = new RangeNode<int>(0, 0, 5000);
-
-            BladeFlurry = new ToggleNode(false);
-            BladeFlurryMinCharges = new RangeNode<int>(6, 1, 6);
-            BladeFlurryUseLeftClick = new ToggleNode(false);
-            BladeFlurryWaitForInfused = new ToggleNode(true);
-
-            ScourgeArrow = new ToggleNode(false);
-            ScourgeArrowMinCharges = new RangeNode<int>(5, 1, 6);
-            ScourgeArrowUseLeftClick = new ToggleNode(false);
-            ScourgeArrowWaitForInfused = new ToggleNode(true);
->>>>>>> upstream/master
 
             RequireMinMonsterCount = new ToggleNode(false);
             NearbyMonsterCount = new RangeNode<int>(1, 1, 30);
@@ -70,7 +23,7 @@ namespace BuffUtil
 
         #region Blood Rage (1)
 
-        [Menu("Blood Rage", 1)] 
+        [Menu("Blood Rage", 1)]
         public ToggleNode BloodRage { get; set; } = new ToggleNode(false);
 
         [Menu("Blood Rage Key", "Which key to press to activate Blood Rage?", 11, 1)]
@@ -89,10 +42,10 @@ namespace BuffUtil
 
         #region Steel Skin (2)
 
-        [Menu("Steel Skin", 2)] 
+        [Menu("Steel Skin", 2)]
         public ToggleNode SteelSkin { get; set; } = new ToggleNode(false);
 
-        [Menu("Steel Skin Key", 21, 2)] 
+        [Menu("Steel Skin Key", 21, 2)]
         public HotkeyNode SteelSkinKey { get; set; } = new HotkeyNode(Keys.W);
 
         [Menu("Connected Skill", "Set the skill slot (1 = top left, 8 = bottom right)", 22, 2)]
@@ -105,10 +58,10 @@ namespace BuffUtil
 
         #region Immortal Call (3)
 
-        [Menu("Immortal Call", 3)] 
+        [Menu("Immortal Call", 3)]
         public ToggleNode ImmortalCall { get; set; } = new ToggleNode(false);
 
-        [Menu("Immortal Call Key", 31, 3)] 
+        [Menu("Immortal Call Key", 31, 3)]
         public HotkeyNode ImmortalCallKey { get; set; } = new HotkeyNode(Keys.T);
 
         [Menu("Connected Skill", "Set the skill slot (1 = top left, 8 = bottom right)", 32, 3)]
@@ -121,7 +74,7 @@ namespace BuffUtil
 
         #region Molten Shell (4)
 
-        [Menu("Molten Shell", 4)] 
+        [Menu("Molten Shell", 4)]
         public ToggleNode MoltenShell { get; set; } = new ToggleNode(false);
 
         [Menu("Molten Shell Key", 41, 4)]
@@ -137,10 +90,10 @@ namespace BuffUtil
 
         #region Phase Run (5)
 
-        [Menu("Phase Run", 5)] 
+        [Menu("Phase Run", 5)]
         public ToggleNode PhaseRun { get; set; } = new ToggleNode(false);
 
-        [Menu("Phase Run Key", 51, 5)] 
+        [Menu("Phase Run Key", 51, 5)]
         public HotkeyNode PhaseRunKey { get; set; } = new HotkeyNode(Keys.R);
 
         [Menu("Connected Skill", "Set the skill slot (1 = top left, 8 = bottom right)", 52, 5)]
@@ -156,10 +109,10 @@ namespace BuffUtil
 
         #region Flame Golem (6)
 
-        [Menu("Flame Golem", 6)] 
+        [Menu("Flame Golem", 6)]
         public ToggleNode FlameGolem { get; set; } = new ToggleNode(false);
 
-        [Menu("Flame Golem Key", 61, 6)] 
+        [Menu("Flame Golem Key", 61, 6)]
         public HotkeyNode FlameGolemKey { get; set; } = new HotkeyNode(Keys.Q);
 
         [Menu("Connected Skill", "Set the skill slot (1 = top left, 8 = bottom right)", 62, 6)]
@@ -211,10 +164,10 @@ namespace BuffUtil
 
         [Menu("Disable in hideout", "Disable the plugin in hideout?", 105, 10)]
         public ToggleNode DisableInHideout { get; set; }
-        
+
         [Menu("Debug", "Print debug messages?", 106, 10)]
         public ToggleNode Debug { get; set; }
-        
+
         [Menu("Silence errors", "Hide error messages?", 107, 10)]
         public ToggleNode SilenceErrors { get; set; }
 
