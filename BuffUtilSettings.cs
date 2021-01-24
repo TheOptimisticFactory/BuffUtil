@@ -9,7 +9,54 @@ namespace BuffUtil
     {
         public BuffUtilSettings()
         {
+<<<<<<< HEAD
             FlameGolemConnectedSkill = new RangeNode<int>(1, 1, 13);
+=======
+            Enable = new ToggleNode(false);
+            BloodRage = new ToggleNode(false);
+            BloodRageKey = new HotkeyNode(Keys.E);
+            BloodRageConnectedSkill = new RangeNode<int>(1, 1, 13);
+            BloodRageMaxHP = new RangeNode<int>(100, 0, 100);
+            BloodRageMaxMP = new RangeNode<int>(100, 0, 100);
+
+            SteelSkin = new ToggleNode(false);
+            SteelSkinKey = new HotkeyNode(Keys.W);
+            SteelSkinConnectedSkill = new RangeNode<int>(1, 1, 13);
+            SteelSkinMaxHP = new RangeNode<int>(90, 0, 100);
+
+            ImmortalCall = new ToggleNode(false);
+            ImmortalCallKey = new HotkeyNode(Keys.T);
+            ImmortalCallConnectedSkill = new RangeNode<int>(1, 1, 13);
+            ImmortalCallMaxHP = new RangeNode<int>(50, 0, 100);
+
+            MoltenShell = new ToggleNode(false);
+            MoltenShellKey = new HotkeyNode(Keys.Q);
+            MoltenShellConnectedSkill = new RangeNode<int>(1, 1, 13);
+            MoltenShellMaxHP = new RangeNode<int>(50, 0, 100);
+
+            PhaseRun = new ToggleNode(false);
+            PhaseRunKey = new HotkeyNode(Keys.R);
+            PhaseRunConnectedSkill = new RangeNode<int>(1, 1, 13);
+            PhaseRunMaxHP = new RangeNode<int>(90, 0, 100);
+            PhaseRunMinMoveTime = new RangeNode<int>(0, 0, 5000);
+            PhaseRunMinBVStacks = new RangeNode<int>(0, 0, 10);
+
+            WitheringStep = new ToggleNode(false);
+            WitheringStepKey = new HotkeyNode(Keys.R);
+            WitheringStepConnectedSkill = new RangeNode<int>(1, 1, 13);
+            WitheringStepMaxHP = new RangeNode<int>(90, 0, 100);
+            WitheringStepMinMoveTime = new RangeNode<int>(0, 0, 5000);
+
+            BladeFlurry = new ToggleNode(false);
+            BladeFlurryMinCharges = new RangeNode<int>(6, 1, 6);
+            BladeFlurryUseLeftClick = new ToggleNode(false);
+            BladeFlurryWaitForInfused = new ToggleNode(true);
+
+            ScourgeArrow = new ToggleNode(false);
+            ScourgeArrowMinCharges = new RangeNode<int>(5, 1, 6);
+            ScourgeArrowUseLeftClick = new ToggleNode(false);
+            ScourgeArrowWaitForInfused = new ToggleNode(true);
+>>>>>>> upstream/master
 
             RequireMinMonsterCount = new ToggleNode(false);
             NearbyMonsterCount = new RangeNode<int>(1, 1, 30);
