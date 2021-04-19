@@ -12,19 +12,19 @@ namespace BuffUtil
             public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
         }
 
-        public static class SteelSkin
+        public static class SeismicCry
         {
-            public const string BuffName = "steelskin";
-            public const string Name = "QuicKGuard";
-            public const string InternalName = "steelskin";
+            public const string BuffName = "display_num_empowered_attacks";
+            public const string Name = "SeismicCry";
+            public const string InternalName = "seismic_cry";
             public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
         }
 
-        public static class ImmortalCall
+        public static class IntimidatingCry
         {
-            public const string BuffName = "mortal_call";
-            public const string Name = "ImmortalCall";
-            public const string InternalName = "mortal_call";
+            public const string BuffName = "display_num_empowered_attacks";
+            public const string Name = "IntimidatingCry";
+            public const string InternalName = "intimidating_cry";
             public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
         }
 

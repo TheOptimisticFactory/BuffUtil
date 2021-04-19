@@ -22,8 +22,8 @@ namespace BuffUtil
         private InputSimulator inputSimulator;
         private Random rand;
         private DateTime? lastBloodRageCast;
-        private DateTime? lastSteelSkinCast;
-        private DateTime? lastImmortalCallCast;
+        private DateTime? lastSeismicCryCast;
+        private DateTime? lastIntimidatingCryCast;
         private DateTime? lastMoltenShellCast;
         private DateTime? lastPhaseRunCast;
         private DateTime? lastGolemCast;
@@ -72,8 +72,8 @@ namespace BuffUtil
                 HandleBoneOffering();
                 HandleGeneralsCry();
                 HandleBloodRage();
-                HandleSteelSkin();
-                HandleImmortalCall();
+                HandleSeismicCry();
+                HandleIntimidatingCry();
                 HandleMoltenShell();
                 HandlePhaseRun();
                 HandleFlameGolem();
@@ -130,89 +130,69 @@ namespace BuffUtil
             }
         }
 
-        private void HandleSteelSkin()
+        private void HandleSeismicCry()
         {
             try
             {
-                if (!Settings.SteelSkin)
+                if (!Settings.SeismicCry)
                     return;
 
-                if (lastSteelSkinCast.HasValue && currentTime - lastSteelSkinCast.Value <
-                    C.SteelSkin.TimeBetweenCasts)
+                if (lastSeismicCryCast.HasValue && currentTime - lastSeismicCryCast.Value < C.SeismicCry.TimeBetweenCasts)
                     return;
 
-                if (HPPercent > Settings.SteelSkinMaxHP.Value)
+                var skill = GetUsableSkill(Settings.SeismicCryConnectedSkill.Value);
+                if (skill == null)
                     return;
 
-                var hasBuff = HasBuff(C.SteelSkin.BuffName);
+                var hasBuff = HasBuff(C.SeismicCry.BuffName, skill);
                 if (!hasBuff.HasValue || hasBuff.Value)
                     return;
 
-                var skill = GetUsableSkill(C.SteelSkin.Name, C.SteelSkin.InternalName,
-                    Settings.SteelSkinConnectedSkill.Value);
-                if (skill == null)
-                {
-                    if (Settings.Debug)
-                        LogMessage("Can not cast Steel Skin - not found in usable skills.", 1);
-                    return;
-                }
-
-                if (!NearbyMonsterCheck())
+                var attackSkill = GetUsableSkill(Settings.SeismicCryAttackConnectedSkill.Value);
+                if (attackSkill != null && attackSkill.IsUsingOrCharging)
                     return;
 
-                if (Settings.Debug)
-                    LogMessage("Casting Steel Skin", 1);
                 if (Core.Current.IsForeground)
-                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.SteelSkinKey.Value);
-                lastSteelSkinCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.SeismicCryKey.Value);
+                lastSeismicCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
             catch (Exception ex)
             {
                 if (showErrors)
-                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleSteelSkin)}: {ex.StackTrace}", 3f);
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleSeismicCry)}: {ex.StackTrace}", 3f);
             }
         }
 
-        private void HandleImmortalCall()
+        private void HandleIntimidatingCry()
         {
             try
             {
-                if (!Settings.ImmortalCall)
+                if (!Settings.IntimidatingCry)
                     return;
 
-                if (lastImmortalCallCast.HasValue && currentTime - lastImmortalCallCast.Value <
-                    C.ImmortalCall.TimeBetweenCasts)
+                if (lastIntimidatingCryCast.HasValue && currentTime - lastIntimidatingCryCast.Value < C.IntimidatingCry.TimeBetweenCasts)
                     return;
 
-                if (HPPercent > Settings.ImmortalCallMaxHP.Value)
+                var skill = GetUsableSkill(Settings.IntimidatingCryConnectedSkill.Value);
+                if (skill == null)
                     return;
 
-                var hasBuff = HasBuff(C.ImmortalCall.BuffName);
+                var hasBuff = HasBuff(C.IntimidatingCry.BuffName, skill);
                 if (!hasBuff.HasValue || hasBuff.Value)
                     return;
 
-                var skill = GetUsableSkill(C.ImmortalCall.Name, C.ImmortalCall.InternalName,
-                    Settings.ImmortalCallConnectedSkill.Value);
-                if (skill == null)
-                {
-                    if (Settings.Debug)
-                        LogMessage("Can not cast Immortal Call - not found in usable skills.", 1);
-                    return;
-                }
-
-                if (!NearbyMonsterCheck())
+                var attackSkill = GetUsableSkill(Settings.IntimidatingCryAttackConnectedSkill.Value);
+                if (attackSkill != null && attackSkill.IsUsingOrCharging)
                     return;
 
-                if (Settings.Debug)
-                    LogMessage("Casting Immortal Call", 1);
                 if (Core.Current.IsForeground)
-                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.ImmortalCallKey.Value);
-                lastImmortalCallCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.IntimidatingCryKey.Value);
+                lastIntimidatingCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
             catch (Exception ex)
             {
                 if (showErrors)
-                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleImmortalCall)}: {ex.StackTrace}", 3f);
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleIntimidatingCry)}: {ex.StackTrace}", 3f);
             }
         }
 
@@ -301,7 +281,7 @@ namespace BuffUtil
             catch (Exception ex)
             {
                 if (showErrors)
-                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleSteelSkin)}: {ex.StackTrace}", 3f);
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandlePhaseRun)}: {ex.StackTrace}", 3f);
             }
         }
 
@@ -492,7 +472,7 @@ namespace BuffUtil
             }
         }
 
-        private bool? HasBuff(string buffName)
+        private bool? HasBuff(string buffName, ActorSkill skill = null)
         {
             if (buffs == null)
             {
@@ -501,10 +481,10 @@ namespace BuffUtil
                 return null;
             }
 
-            return buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0);
+            return buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0 && (skill == null || b.SkillIndex == skill.SlotIdentifier));
         }
 
-        private Buff GetBuff(string buffName)
+        private Buff GetBuff(string buffName, ActorSkill skill = null)
         {
             if (buffs == null)
             {
@@ -513,7 +493,19 @@ namespace BuffUtil
                 return null;
             }
 
-            return buffs.FirstOrDefault(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0);
+            return buffs.FirstOrDefault(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0 && (skill == null || b.SkillIndex == skill.SlotIdentifier));
+        }
+
+        private ActorSkill GetUsableSkill(int skillSlotIndex)
+        {
+            if (skills == null)
+            {
+                if (showErrors)
+                    LogError("Requested usable skill, but skill list is empty.", 1);
+                return null;
+            }
+
+            return skills.FirstOrDefault(s => s.SkillSlotIndex == skillSlotIndex - 1);
         }
 
         private ActorSkill GetUsableSkill(string skillName, string skillInternalName, int skillSlotIndex)

@@ -40,35 +40,35 @@ namespace BuffUtil
 
         #endregion
 
-        #region Steel Skin (2)
+        #region Seismic Cry (2)
 
-        [Menu("Steel Skin", 2)]
-        public ToggleNode SteelSkin { get; set; } = new ToggleNode(false);
+        [Menu("Seismic Cry", 2)]
+        public ToggleNode SeismicCry { get; set; } = new ToggleNode(false);
 
-        [Menu("Steel Skin Key", 21, 2)]
-        public HotkeyNode SteelSkinKey { get; set; } = new HotkeyNode(Keys.W);
+        [Menu("Seismic Cry Key", 21, 2)]
+        public HotkeyNode SeismicCryKey { get; set; } = new HotkeyNode(Keys.W);
 
         [Menu("Connected Skill", "Set the skill slot (1 = top left, 8 = bottom right)", 22, 2)]
-        public RangeNode<int> SteelSkinConnectedSkill { get; set; } = new RangeNode<int>(1, 1, 13);
+        public RangeNode<int> SeismicCryConnectedSkill { get; set; } = new RangeNode<int>(1, 1, 13);
 
-        [Menu("Max HP", "HP percent above which skill is not cast", 23, 2)]
-        public RangeNode<int> SteelSkinMaxHP { get; set; } = new RangeNode<int>(90, 0, 100);
+        [Menu("Attack Connected Skill", "Set the skill slot (1 = top left, 8 = bottom right)", 23, 2)]
+        public RangeNode<int> SeismicCryAttackConnectedSkill { get; set; } = new RangeNode<int>(1, 1, 13);
 
         #endregion
 
-        #region Immortal Call (3)
+        #region Intimidating Cry (3)
 
-        [Menu("Immortal Call", 3)]
-        public ToggleNode ImmortalCall { get; set; } = new ToggleNode(false);
+        [Menu("Intimidating Cry", 3)]
+        public ToggleNode IntimidatingCry { get; set; } = new ToggleNode(false);
 
-        [Menu("Immortal Call Key", 31, 3)]
-        public HotkeyNode ImmortalCallKey { get; set; } = new HotkeyNode(Keys.T);
+        [Menu("Intimidating Cry Key", 31, 3)]
+        public HotkeyNode IntimidatingCryKey { get; set; } = new HotkeyNode(Keys.T);
 
         [Menu("Connected Skill", "Set the skill slot (1 = top left, 8 = bottom right)", 32, 3)]
-        public RangeNode<int> ImmortalCallConnectedSkill { get; set; } = new RangeNode<int>(1, 1, 13);
+        public RangeNode<int> IntimidatingCryConnectedSkill { get; set; } = new RangeNode<int>(1, 1, 13);
 
-        [Menu("Max HP", "HP percent above which skill is not cast", 33, 3)]
-        public RangeNode<int> ImmortalCallMaxHP { get; set; } = new RangeNode<int>(50, 0, 100);
+        [Menu("Attack Connected Skill", "Set the skill slot (1 = top left, 8 = bottom right)", 33, 3)]
+        public RangeNode<int> IntimidatingCryAttackConnectedSkill { get; set; } = new RangeNode<int>(1, 1, 13);
 
         #endregion
 
