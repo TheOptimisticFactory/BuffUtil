@@ -22,14 +22,20 @@ namespace BuffUtil
         private InputSimulator inputSimulator;
         private Random rand;
         private DateTime? lastBloodRageCast;
-        private DateTime? lastPhaseRunCast;
         private DateTime? lastWitheringStepCast;
         private DateTime? lastSteelSkinCast;
         private DateTime? lastImmortalCallCast;
+        private DateTime? lastSeismicCryCast;
+        private DateTime? lastIntimidatingCryCast;
         private DateTime? lastMoltenShellCast;
+        private DateTime? lastPhaseRunCast;
+        private DateTime? lastGolemCast;
+        private DateTime? lastBoneOfferingCast;
+        private DateTime? lastGeneralsCryCast;
         private float HPPercent;
         private float MPPercent;
         private int? nearbyMonsterCount;
+        private int? nearbyCorpseCount;
         private bool showErrors = true;
         private Stopwatch movementStopwatch { get; set; } = new Stopwatch();
 
@@ -68,12 +74,17 @@ namespace BuffUtil
             {
                 HandleBladeFlurry();
                 HandleScourgeArrow();
+                HandleBoneOffering();
+                HandleGeneralsCry();
                 HandleBloodRage();
                 HandleSteelSkin();
                 HandleImmortalCall();
+                HandleSeismicCry();
+                HandleIntimidatingCry();
                 HandleMoltenShell();
                 HandlePhaseRun();
                 HandleWitheringStep();
+                HandleFlameGolem();
             }
             catch (Exception ex)
             {
@@ -83,7 +94,6 @@ namespace BuffUtil
                 }
             }
         }
-
         private void HandleBladeFlurry()
         {
             try
@@ -202,7 +212,8 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting Blood Rage", 1);
-                inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.BloodRageKey.Value);
+                if (Core.Current.IsForeground)
+                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.BloodRageKey.Value);
                 lastBloodRageCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
             catch (Exception ex)
@@ -244,7 +255,7 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting Steel Skin", 1);
-                inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.SteelSkinKey.Value);
+                inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.SteelSkinKey.Value);
                 lastSteelSkinCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
             catch (Exception ex)
@@ -286,13 +297,79 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting Immortal Call", 1);
-                inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.ImmortalCallKey.Value);
+                inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.ImmortalCallKey.Value);
                 lastImmortalCallCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
             catch (Exception ex)
             {
                 if (showErrors)
                     LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleImmortalCall)}: {ex.StackTrace}", 3f);
+            }
+        }
+
+        private void HandleSeismicCry()
+        {
+            try
+            {
+                if (!Settings.SeismicCry)
+                    return;
+
+                if (lastSeismicCryCast.HasValue && currentTime - lastSeismicCryCast.Value < C.SeismicCry.TimeBetweenCasts)
+                    return;
+
+                var skill = GetUsableSkill(Settings.SeismicCryConnectedSkill.Value);
+                if (skill == null)
+                    return;
+
+                var hasBuff = HasBuff(C.SeismicCry.BuffName, skill);
+                if (!hasBuff.HasValue || hasBuff.Value)
+                    return;
+
+                var attackSkill = GetUsableSkill(Settings.SeismicCryAttackConnectedSkill.Value);
+                if (attackSkill != null && attackSkill.IsUsingOrCharging)
+                    return;
+
+                if (Core.Current.IsForeground)
+                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.SeismicCryKey.Value);
+                lastSeismicCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+            }
+            catch (Exception ex)
+            {
+                if (showErrors)
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleSeismicCry)}: {ex.StackTrace}", 3f);
+            }
+        }
+
+        private void HandleIntimidatingCry()
+        {
+            try
+            {
+                if (!Settings.IntimidatingCry)
+                    return;
+
+                if (lastIntimidatingCryCast.HasValue && currentTime - lastIntimidatingCryCast.Value < C.IntimidatingCry.TimeBetweenCasts)
+                    return;
+
+                var skill = GetUsableSkill(Settings.IntimidatingCryConnectedSkill.Value);
+                if (skill == null)
+                    return;
+
+                var hasBuff = HasBuff(C.IntimidatingCry.BuffName, skill);
+                if (!hasBuff.HasValue || hasBuff.Value)
+                    return;
+
+                var attackSkill = GetUsableSkill(Settings.IntimidatingCryAttackConnectedSkill.Value);
+                if (attackSkill != null && attackSkill.IsUsingOrCharging)
+                    return;
+
+                if (Core.Current.IsForeground)
+                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.IntimidatingCryKey.Value);
+                lastIntimidatingCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+            }
+            catch (Exception ex)
+            {
+                if (showErrors)
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleIntimidatingCry)}: {ex.StackTrace}", 3f);
             }
         }
 
@@ -328,7 +405,8 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting Molten Shell", 1);
-                inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.MoltenShellKey.Value);
+                if (Core.Current.IsForeground)
+                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.MoltenShellKey.Value);
                 lastMoltenShellCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
             catch (Exception ex)
@@ -359,14 +437,6 @@ namespace BuffUtil
                 if (!hasBuff.HasValue || hasBuff.Value)
                     return;
 
-                var requiredBVStacks = Settings.PhaseRunMinBVStacks.Value;
-                if (requiredBVStacks > 0)
-                {
-                    var bvBuff = GetBuff(C.BladeVortex.BuffName);
-                    if (bvBuff == null || bvBuff.Charges < requiredBVStacks)
-                        return;
-                }
-
                 var skill = GetUsableSkill(C.PhaseRun.Name, C.PhaseRun.InternalName,
                     Settings.PhaseRunConnectedSkill.Value);
                 if (skill == null)
@@ -381,13 +451,14 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting Phase Run", 1);
-                inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.PhaseRunKey.Value);
+                if (Core.Current.IsForeground)
+                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.PhaseRunKey.Value);
                 lastPhaseRunCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
             catch (Exception ex)
             {
                 if (showErrors)
-                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleSteelSkin)}: {ex.StackTrace}", 3f);
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandlePhaseRun)}: {ex.StackTrace}", 3f);
             }
         }
 
@@ -426,13 +497,127 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting Withering Step", 1);
-                inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.WitheringStepKey.Value);
+                inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.WitheringStepKey.Value);
                 lastWitheringStepCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
             catch (Exception ex)
             {
                 if (showErrors)
                     LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleSteelSkin)}: {ex.StackTrace}", 3f);
+            }
+        }
+
+        private void HandleFlameGolem()
+        {
+            try
+            {
+                if (!Settings.FlameGolem)
+                    return;
+
+                if (lastGolemCast.HasValue && currentTime - lastGolemCast.Value < C.FlameGolem.TimeBetweenCasts)
+                    return;
+
+                var hasBuff = HasBuff(C.FlameGolem.BuffName);
+                if (!hasBuff.HasValue || hasBuff.Value)
+                    return;
+
+                var skill = GetUsableSkill(C.FlameGolem.Name, C.FlameGolem.InternalName, Settings.FlameGolemConnectedSkill.Value);
+                if (skill == null || !skill.CanBeUsed)
+                {
+                    if (Settings.Debug)
+                        LogMessage("Can not cast Golem - not found in usable skills.", 1);
+                    return;
+                }
+
+                if (Settings.Debug)
+                    LogMessage("Casting Golem", 1);
+                if (Core.Current.IsForeground)
+                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.FlameGolemKey.Value);
+                lastGolemCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+            }
+            catch (Exception ex)
+            {
+                if (showErrors)
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleFlameGolem)}: {ex.StackTrace}", 3f);
+            }
+        }
+
+        private void HandleBoneOffering()
+        {
+            try
+            {
+                if (!Settings.BoneOffering)
+                    return;
+
+                if (lastBoneOfferingCast.HasValue && currentTime - lastBoneOfferingCast.Value < C.BoneOffering.TimeBetweenCasts)
+                    return;
+
+                var hasBuff = HasBuff(C.BoneOffering.BuffName);
+                if (!hasBuff.HasValue || hasBuff.Value)
+                    return;
+
+                if (!NearbyCorpseCheck())
+                    return;
+
+                var skill = GetUsableSkill(C.BoneOffering.Name, C.BoneOffering.InternalName, Settings.BoneOfferingConnectedSkill.Value);
+                if (skill == null || !skill.CanBeUsed)
+                {
+                    if (Settings.Debug)
+                        LogMessage("Can not cast bone offering - not found in usable skills.", 1);
+                    return;
+                }
+
+                if (Settings.Debug)
+                    LogMessage("Casting Bone Offering", 1);
+                if (Core.Current.IsForeground)
+                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.BoneOfferingKey.Value);
+                lastBoneOfferingCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+            }
+            catch (Exception ex)
+            {
+                if (showErrors)
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleFlameGolem)}: {ex.StackTrace}", 3f);
+            }
+        }
+
+        private void HandleGeneralsCry()
+        {
+            try
+            {
+                if (!Settings.GeneralsCry)
+                    return;
+
+                if (lastGeneralsCryCast.HasValue && currentTime - lastGeneralsCryCast.Value < C.GeneralsCry.TimeBetweenCasts)
+                    return;
+
+                var hasBuff = HasBuff(C.GeneralsCry.BuffName);
+                if (!hasBuff.HasValue || hasBuff.Value)
+                    return;
+
+                if (!NearbyMonsterCheck())
+                    return;
+
+                if (!NearbyCorpseCheck())
+                    return;
+
+                var skill = GetUsableSkill(C.GeneralsCry.Name, C.GeneralsCry.InternalName, Settings.GeneralsCryConnectedSkill.Value);
+                if (skill == null || !skill.CanBeUsed)
+                {
+                    if (Settings.Debug)
+                        LogMessage("Can not cast generals cry - not found in usable skills.", 1);
+                    return;
+                }
+
+                if (Settings.Debug)
+                    LogMessage("Casting General's Cry", 1);
+                if (Core.Current.IsForeground)
+                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.GeneralsCryKey.Value);
+                lastGeneralsCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+            }
+            catch (Exception ex)
+            {
+                if (showErrors)
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleFlameGolem)}: {ex.StackTrace}", 3f);
             }
         }
 
@@ -453,7 +638,7 @@ namespace BuffUtil
                 if (isDead)
                     return false;
 
-                buffs = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Life>().Buffs;
+                buffs = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<ExileCore.PoEMemory.Components.Buffs>().BuffsList;
                 if (buffs == null)
                     return false;
 
@@ -500,6 +685,7 @@ namespace BuffUtil
                 skills = null;
                 currentTime = null;
                 nearbyMonsterCount = null;
+                nearbyCorpseCount = null;
             }
             catch (Exception ex)
             {
@@ -508,7 +694,7 @@ namespace BuffUtil
             }
         }
 
-        private bool? HasBuff(string buffName)
+        private bool? HasBuff(string buffName, ActorSkill skill = null)
         {
             if (buffs == null)
             {
@@ -517,10 +703,10 @@ namespace BuffUtil
                 return null;
             }
 
-            return buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0);
+            return buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0 && (skill == null || b.SkillIndex == skill.SlotIdentifier));
         }
 
-        private Buff GetBuff(string buffName)
+        private Buff GetBuff(string buffName, ActorSkill skill = null)
         {
             if (buffs == null)
             {
@@ -529,7 +715,19 @@ namespace BuffUtil
                 return null;
             }
 
-            return buffs.FirstOrDefault(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0);
+            return buffs.FirstOrDefault(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0 && (skill == null || b.SkillIndex == skill.SlotIdentifier));
+        }
+
+        private ActorSkill GetUsableSkill(int skillSlotIndex)
+        {
+            if (skills == null)
+            {
+                if (showErrors)
+                    LogError("Requested usable skill, but skill list is empty.", 1);
+                return null;
+            }
+
+            return skills.FirstOrDefault(s => s.SkillSlotIndex == skillSlotIndex - 1);
         }
 
         private ActorSkill GetUsableSkill(string skillName, string skillInternalName, int skillSlotIndex)
@@ -548,11 +746,8 @@ namespace BuffUtil
 
         private bool NearbyMonsterCheck()
         {
-            if (!Settings.RequireMinMonsterCount.Value)
-                return true;
-
             if (nearbyMonsterCount.HasValue)
-                return nearbyMonsterCount.Value >= Settings.NearbyMonsterCount;
+                return nearbyMonsterCount.Value >= Settings.NearbyMonsterCount.Value;
 
             var playerPosition = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Render>().Pos;
 
@@ -596,6 +791,56 @@ namespace BuffUtil
             {
                 if (showErrors)
                     LogError($"Exception in {nameof(BuffUtil)}.{nameof(IsValidNearbyMonster)}: {ex.StackTrace}", 3f);
+                return false;
+            }
+        }
+
+        private bool NearbyCorpseCheck()
+        {
+            if (nearbyCorpseCount.HasValue)
+                return nearbyCorpseCount.Value >= Settings.NearbyCorpseCount.Value;
+
+            var playerPosition = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Render>().Pos;
+
+            List<Entity> localLoadedMonsters;
+            lock (loadedMonstersLock)
+            {
+                localLoadedMonsters = new List<Entity>(loadedMonsters);
+            }
+
+            var maxDistance = Settings.NearbyMonsterMaxDistance.Value;
+            var maxDistanceSquared = maxDistance * maxDistance;
+            var corpseCount = 0;
+            foreach (var monster in localLoadedMonsters)
+                if (IsValidNearbyCorpse(monster, playerPosition, maxDistanceSquared))
+                    corpseCount++;
+
+            nearbyCorpseCount = corpseCount;
+            var result = nearbyCorpseCount.Value >= Settings.NearbyCorpseCount;
+            if (Settings.Debug.Value && !result)
+                LogMessage("NearbyCorpseCheck failed.", 1);
+            return result;
+        }
+
+        private bool IsValidNearbyCorpse(Entity monster, Vector3 playerPosition, int maxDistanceSquared)
+        {
+            try
+            {
+                if (!monster.IsTargetable || monster.IsAlive || monster.IsHidden || !monster.IsValid)
+                    return false;
+
+                var monsterPosition = monster.Pos;
+
+                var xDiff = playerPosition.X - monsterPosition.X;
+                var yDiff = playerPosition.Y - monsterPosition.Y;
+                var monsterDistanceSquare = xDiff * xDiff + yDiff * yDiff;
+
+                return monsterDistanceSquare <= maxDistanceSquared;
+            }
+            catch (Exception ex)
+            {
+                if (showErrors)
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(IsValidNearbyCorpse)}: {ex.StackTrace}", 3f);
                 return false;
             }
         }
