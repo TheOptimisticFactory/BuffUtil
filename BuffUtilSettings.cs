@@ -9,7 +9,7 @@ namespace BuffUtil
     {
         public BuffUtilSettings()
         {
-            FlameGolemConnectedSkill = new RangeNode<int>(1, 1, 13);
+            Enable = new ToggleNode(false);
 
             RequireMinMonsterCount = new ToggleNode(false);
             NearbyMonsterCount = new RangeNode<int>(1, 1, 30);
