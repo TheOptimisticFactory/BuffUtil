@@ -152,6 +152,11 @@ namespace BuffUtil
                 if (attackSkill != null && attackSkill.IsUsingOrCharging)
                     return;
 
+                //var player = GameController.Game.IngameState.Data.LocalPlayer;
+                //var playerActor = player.GetComponent<Actor>();
+                //if (player != null && player.Address != 0 && playerActor.isMoving)
+                //    return;
+
                 if (Core.Current.IsForeground)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.SeismicCryKey.Value);
                 lastSeismicCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
@@ -184,6 +189,11 @@ namespace BuffUtil
                 var attackSkill = GetUsableSkill(Settings.IntimidatingCryAttackConnectedSkill.Value);
                 if (attackSkill != null && attackSkill.IsUsingOrCharging)
                     return;
+
+                //var player = GameController.Game.IngameState.Data.LocalPlayer;
+                //var playerActor = player.GetComponent<Actor>();
+                //if (player != null && player.Address != 0 && playerActor.isMoving)
+                //    return;
 
                 if (Core.Current.IsForeground)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.IntimidatingCryKey.Value);
