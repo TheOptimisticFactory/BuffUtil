@@ -144,18 +144,14 @@ namespace BuffUtil
                 if (skill == null)
                     return;
 
-                var hasBuff = HasBuff(C.SeismicCry.BuffName, skill);
-                if (!hasBuff.HasValue || hasBuff.Value)
+                var hasBuff = HasBuff(C.IntimidatingCry.BuffName, skill);
+                var monsterPowerNearby = GetMonsterPower();
+                if (monsterPowerNearby < 20 && hasBuff.HasValue && hasBuff.Value || skill.RemainingUses < 2)
                     return;
 
                 var attackSkill = GetUsableSkill(Settings.SeismicCryAttackConnectedSkill.Value);
                 if (attackSkill != null && attackSkill.IsUsingOrCharging)
                     return;
-
-                //var player = GameController.Game.IngameState.Data.LocalPlayer;
-                //var playerActor = player.GetComponent<Actor>();
-                //if (player != null && player.Address != 0 && playerActor.isMoving)
-                //    return;
 
                 if (Core.Current.IsForeground)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.SeismicCryKey.Value);
@@ -183,17 +179,13 @@ namespace BuffUtil
                     return;
 
                 var hasBuff = HasBuff(C.IntimidatingCry.BuffName, skill);
-                if (!hasBuff.HasValue || hasBuff.Value)
+                var monsterPowerNearby = GetMonsterPower();
+                if (monsterPowerNearby < 20 && hasBuff.HasValue && hasBuff.Value || skill.RemainingUses < 2)
                     return;
 
                 var attackSkill = GetUsableSkill(Settings.IntimidatingCryAttackConnectedSkill.Value);
                 if (attackSkill != null && attackSkill.IsUsingOrCharging)
                     return;
-
-                //var player = GameController.Game.IngameState.Data.LocalPlayer;
-                //var playerActor = player.GetComponent<Actor>();
-                //if (player != null && player.Address != 0 && playerActor.isMoving)
-                //    return;
 
                 if (Core.Current.IsForeground)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.IntimidatingCryKey.Value);
@@ -532,8 +524,46 @@ namespace BuffUtil
                 s.SkillSlotIndex == skillSlotIndex - 1);
         }
 
+        private int GetMonsterPower()
+        {
+            var playerPosition = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Render>().Pos;
+
+            List<Entity> localLoadedMonsters;
+            lock (loadedMonstersLock)
+            {
+                localLoadedMonsters = new List<Entity>(loadedMonsters);
+            }
+
+            var maxDistance = Settings.NearbyMonsterMaxDistance.Value;
+            var maxDistanceSquared = maxDistance * maxDistance;
+            var monsterPower = 0;
+            foreach (var monster in localLoadedMonsters)
+                if (IsValidNearbyMonster(monster, playerPosition, maxDistanceSquared))
+                {
+                    switch(monster.Rarity)
+                    {
+                        case ExileCore.Shared.Enums.MonsterRarity.White:
+                            monsterPower += 1;
+                            break;
+                        case ExileCore.Shared.Enums.MonsterRarity.Magic:
+                            monsterPower += 2;
+                            break;
+                        case ExileCore.Shared.Enums.MonsterRarity.Rare:
+                            monsterPower += 10;
+                            break;
+                        case ExileCore.Shared.Enums.MonsterRarity.Unique:
+                            monsterPower += 20;
+                            break;
+                    }
+                }
+            return monsterPower;
+        }
+
         private bool NearbyMonsterCheck()
         {
+            if (!Settings.RequireMinMonsterCount)
+                return true;
+
             if (nearbyMonsterCount.HasValue)
                 return nearbyMonsterCount.Value >= Settings.NearbyMonsterCount.Value;
 
@@ -563,8 +593,7 @@ namespace BuffUtil
         {
             try
             {
-                if (!monster.IsTargetable || !monster.IsAlive || !monster.IsHostile || monster.IsHidden ||
-                    !monster.IsValid)
+                if (!monster.IsTargetable || !monster.IsAlive || !monster.IsHostile || monster.IsHidden || !monster.IsValid)
                     return false;
 
                 var monsterPosition = monster.Pos;
