@@ -29,6 +29,7 @@ namespace BuffUtil
         private DateTime? lastGolemCast;
         private DateTime? lastBoneOfferingCast;
         private DateTime? lastGeneralsCryCast;
+        private DateTime? lastEnduringCryCast;
         private float HPPercent;
         private float MPPercent;
         private int? nearbyMonsterCount;
@@ -69,6 +70,7 @@ namespace BuffUtil
         {
             try
             {
+                HandleEnduringCry();
                 HandleBoneOffering();
                 HandleGeneralsCry();
                 HandleBloodRage();
@@ -146,7 +148,7 @@ namespace BuffUtil
 
                 var hasBuff = HasBuff(C.IntimidatingCry.BuffName, skill);
                 var monsterPowerNearby = GetMonsterPower();
-                if (monsterPowerNearby < 20 && hasBuff.HasValue && hasBuff.Value || skill.RemainingUses < 2)
+                if (hasBuff.HasValue && hasBuff.Value)
                     return;
 
                 var attackSkill = GetUsableSkill(Settings.SeismicCryAttackConnectedSkill.Value);
@@ -216,8 +218,7 @@ namespace BuffUtil
                 if (!hasBuff.HasValue || hasBuff.Value)
                     return;
 
-                var skill = GetUsableSkill(C.MoltenShell.Name, C.MoltenShell.InternalName,
-                    Settings.MoltenShellConnectedSkill.Value);
+                var skill = GetUsableSkill(C.MoltenShell.Name, C.MoltenShell.InternalName, Settings.MoltenShellConnectedSkill.Value);
                 if (skill == null)
                 {
                     if (Settings.Debug)
@@ -393,6 +394,40 @@ namespace BuffUtil
                 if (Core.Current.IsForeground)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.GeneralsCryKey.Value);
                 lastGeneralsCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+            }
+            catch (Exception ex)
+            {
+                if (showErrors)
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleFlameGolem)}: {ex.StackTrace}", 3f);
+            }
+        }
+
+        private void HandleEnduringCry()
+        {
+            try
+            {
+                if (!Settings.EnduringCry)
+                    return;
+
+                if (lastEnduringCryCast.HasValue && currentTime - lastEnduringCryCast.Value < C.EnduringCry.TimeBetweenCasts)
+                    return;
+
+                var hasBuff = HasBuff(C.EnduringCry.BuffName);
+                if (!hasBuff.HasValue || hasBuff.Value)
+                    return;
+
+                if (!NearbyMonsterCheck())
+                    return;
+
+                var skill = GetUsableSkill(C.EnduringCry.Name, C.EnduringCry.InternalName, Settings.EnduringCryConnectedSkill.Value);
+                if (skill == null || !skill.CanBeUsed)
+                {
+                    return;
+                }
+
+                if (Core.Current.IsForeground)
+                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.EnduringCryKey.Value);
+                lastEnduringCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
             catch (Exception ex)
             {

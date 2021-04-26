@@ -146,6 +146,19 @@ namespace BuffUtil
 
         #endregion
 
+        #region Enduring Cry (9)
+
+        [Menu("Enduring Cry", 9)]
+        public ToggleNode EnduringCry { get; set; } = new ToggleNode(false);
+
+        [Menu("Enduring Cry Key", 91, 9)]
+        public HotkeyNode EnduringCryKey { get; set; } = new HotkeyNode(Keys.OemMinus);
+
+        [Menu("Connected Skill", "Set the skill slot (1 = top left, 8 = bottom right)", 92, 9)]
+        public RangeNode<int> EnduringCryConnectedSkill { get; set; } = new RangeNode<int>(1, 1, 13);
+
+        #endregion
+
         #region Misc (10)
 
         [Menu("Misc", 10)] public EmptyNode MiscSettings { get; set; }

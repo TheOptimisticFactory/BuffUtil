@@ -69,6 +69,14 @@ namespace BuffUtil
             public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
         }
 
+        public static class EnduringCry
+        {
+            public const string BuffName = "enduring_cry_endurance_charge_benefits";
+            public const string Name = "EnduringCry";
+            public const string InternalName = "enduring_cry";
+            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
+        }
+
         public static class GracePeriod
         {
             public const string BuffName = "grace_period";
