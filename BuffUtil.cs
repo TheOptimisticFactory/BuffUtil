@@ -642,7 +642,7 @@ namespace BuffUtil
                 if (isDead)
                     return false;
 
-                buffs = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<ExileCore.PoEMemory.Components.Buffs>().BuffsList;
+                buffs = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Buffs>().BuffsList;
                 if (buffs == null)
                     return false;
 
@@ -707,7 +707,8 @@ namespace BuffUtil
                 return null;
             }
 
-            return buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0 && (skill == null || b.SkillIndex == skill.SlotIdentifier));
+            return buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0
+                                  && (skill == null || b.SkillIndex() == skill.SlotIdentifier()));
         }
 
         private Buff GetBuff(string buffName, ActorSkill skill = null)
@@ -719,7 +720,8 @@ namespace BuffUtil
                 return null;
             }
 
-            return buffs.FirstOrDefault(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0 && (skill == null || b.SkillIndex == skill.SlotIdentifier));
+            return buffs.FirstOrDefault(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0
+                                             && (skill == null || b.SkillIndex() == skill.SlotIdentifier()));
         }
 
         private ActorSkill GetUsableSkill(int skillSlotIndex)

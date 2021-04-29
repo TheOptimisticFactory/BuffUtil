@@ -59,6 +59,7 @@
     <Compile Include="BuffUtil.cs" />
     <Compile Include="BuffUtilSettings.cs" />
     <Compile Include="C.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
