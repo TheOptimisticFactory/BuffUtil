@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -32,6 +32,7 @@ namespace BuffUtil
         private DateTime? lastGolemCast;
         private DateTime? lastBoneOfferingCast;
         private DateTime? lastGeneralsCryCast;
+        private DateTime? lastEnduringCryCast;
         private float HPPercent;
         private float MPPercent;
         private int? nearbyMonsterCount;
@@ -73,6 +74,7 @@ namespace BuffUtil
             try
             {
                 HandleBladeFlurry();
+                HandleEnduringCry();
                 HandleScourgeArrow();
                 HandleBoneOffering();
                 HandleGeneralsCry();
@@ -391,8 +393,7 @@ namespace BuffUtil
                 if (!hasBuff.HasValue || hasBuff.Value)
                     return;
 
-                var skill = GetUsableSkill(C.MoltenShell.Name, C.MoltenShell.InternalName,
-                    Settings.MoltenShellConnectedSkill.Value);
+                var skill = GetUsableSkill(C.MoltenShell.Name, C.MoltenShell.InternalName, Settings.MoltenShellConnectedSkill.Value);
                 if (skill == null)
                 {
                     if (Settings.Debug)
@@ -621,6 +622,40 @@ namespace BuffUtil
             }
         }
 
+        private void HandleEnduringCry()
+        {
+            try
+            {
+                if (!Settings.EnduringCry)
+                    return;
+
+                if (lastEnduringCryCast.HasValue && currentTime - lastEnduringCryCast.Value < C.EnduringCry.TimeBetweenCasts)
+                    return;
+
+                var hasBuff = HasBuff(C.EnduringCry.BuffName);
+                if (!hasBuff.HasValue || hasBuff.Value)
+                    return;
+
+                if (!NearbyMonsterCheck())
+                    return;
+
+                var skill = GetUsableSkill(C.EnduringCry.Name, C.EnduringCry.InternalName, Settings.EnduringCryConnectedSkill.Value);
+                if (skill == null || !skill.CanBeUsed)
+                {
+                    return;
+                }
+
+                if (Core.Current.IsForeground)
+                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.EnduringCryKey.Value);
+                lastEnduringCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
+            }
+            catch (Exception ex)
+            {
+                if (showErrors)
+                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleFlameGolem)}: {ex.StackTrace}", 3f);
+            }
+        }
+
         private bool OnPreExecute()
         {
             try
@@ -642,7 +677,7 @@ namespace BuffUtil
                 if (isDead)
                     return false;
 
-                buffs = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Buffs>().BuffsList;
+                buffs = player.GetComponent<Buffs>()?.BuffsList;
                 if (buffs == null)
                     return false;
 
@@ -749,8 +784,46 @@ namespace BuffUtil
                 (s.Name == skillName || s.InternalName == skillInternalName));
         }
 
+        private int GetMonsterPower()
+        {
+            var playerPosition = GameController.Game.IngameState.Data.LocalPlayer.GetComponent<Render>().Pos;
+
+            List<Entity> localLoadedMonsters;
+            lock (loadedMonstersLock)
+            {
+                localLoadedMonsters = new List<Entity>(loadedMonsters);
+            }
+
+            var maxDistance = Settings.NearbyMonsterMaxDistance.Value;
+            var maxDistanceSquared = maxDistance * maxDistance;
+            var monsterPower = 0;
+            foreach (var monster in localLoadedMonsters)
+                if (IsValidNearbyMonster(monster, playerPosition, maxDistanceSquared))
+                {
+                    switch(monster.Rarity)
+                    {
+                        case ExileCore.Shared.Enums.MonsterRarity.White:
+                            monsterPower += 1;
+                            break;
+                        case ExileCore.Shared.Enums.MonsterRarity.Magic:
+                            monsterPower += 2;
+                            break;
+                        case ExileCore.Shared.Enums.MonsterRarity.Rare:
+                            monsterPower += 10;
+                            break;
+                        case ExileCore.Shared.Enums.MonsterRarity.Unique:
+                            monsterPower += 20;
+                            break;
+                    }
+                }
+            return monsterPower;
+        }
+
         private bool NearbyMonsterCheck()
         {
+            if (!Settings.RequireMinMonsterCount)
+                return true;
+
             if (nearbyMonsterCount.HasValue)
                 return nearbyMonsterCount.Value >= Settings.NearbyMonsterCount.Value;
 
@@ -780,8 +853,7 @@ namespace BuffUtil
         {
             try
             {
-                if (!monster.IsTargetable || !monster.IsAlive || !monster.IsHostile || monster.IsHidden ||
-                    !monster.IsValid)
+                if (!monster.IsTargetable || !monster.IsAlive || !monster.IsHostile || monster.IsHidden || !monster.IsValid)
                     return false;
 
                 var monsterPosition = monster.Pos;

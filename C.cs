@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace BuffUtil
 {
@@ -104,6 +104,14 @@ namespace BuffUtil
             public const string BuffName = "fortify";
             public const string Name = "GeneralsCry";
             public const string InternalName = "spiritual_cry";
+            public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
+        }
+
+        public static class EnduringCry
+        {
+            public const string BuffName = "enduring_cry_endurance_charge_benefits";
+            public const string Name = "EnduringCry";
+            public const string InternalName = "enduring_cry";
             public static readonly TimeSpan TimeBetweenCasts = TimeSpan.FromSeconds(1);
         }
 
