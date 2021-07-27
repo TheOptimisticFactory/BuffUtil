@@ -74,8 +74,6 @@ namespace BuffUtil
                 HandleBoneOffering();
                 HandleGeneralsCry();
                 HandleBloodRage();
-                HandleSeismicCry();
-                HandleIntimidatingCry();
                 HandleMoltenShell();
                 HandlePhaseRun();
                 HandleFlameGolem();
@@ -129,74 +127,6 @@ namespace BuffUtil
             {
                 if (showErrors)
                     LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleBloodRage)}: {ex.StackTrace}", 3f);
-            }
-        }
-
-        private void HandleSeismicCry()
-        {
-            try
-            {
-                if (!Settings.SeismicCry)
-                    return;
-
-                if (lastSeismicCryCast.HasValue && currentTime - lastSeismicCryCast.Value < C.SeismicCry.TimeBetweenCasts)
-                    return;
-
-                var skill = GetUsableSkill(Settings.SeismicCryConnectedSkill.Value);
-                if (skill == null)
-                    return;
-
-                var hasBuff = HasBuff(C.IntimidatingCry.BuffName, skill);
-                var monsterPowerNearby = GetMonsterPower();
-                if (hasBuff.HasValue && hasBuff.Value)
-                    return;
-
-                var attackSkill = GetUsableSkill(Settings.SeismicCryAttackConnectedSkill.Value);
-                if (attackSkill != null && attackSkill.IsUsingOrCharging)
-                    return;
-
-                if (Core.Current.IsForeground)
-                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.SeismicCryKey.Value);
-                lastSeismicCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
-            }
-            catch (Exception ex)
-            {
-                if (showErrors)
-                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleSeismicCry)}: {ex.StackTrace}", 3f);
-            }
-        }
-
-        private void HandleIntimidatingCry()
-        {
-            try
-            {
-                if (!Settings.IntimidatingCry)
-                    return;
-
-                if (lastIntimidatingCryCast.HasValue && currentTime - lastIntimidatingCryCast.Value < C.IntimidatingCry.TimeBetweenCasts)
-                    return;
-
-                var skill = GetUsableSkill(Settings.IntimidatingCryConnectedSkill.Value);
-                if (skill == null)
-                    return;
-
-                var hasBuff = HasBuff(C.IntimidatingCry.BuffName, skill);
-                var monsterPowerNearby = GetMonsterPower();
-                if (monsterPowerNearby < 20 && hasBuff.HasValue && hasBuff.Value || skill.RemainingUses < 2)
-                    return;
-
-                var attackSkill = GetUsableSkill(Settings.IntimidatingCryAttackConnectedSkill.Value);
-                if (attackSkill != null && attackSkill.IsUsingOrCharging)
-                    return;
-
-                if (Core.Current.IsForeground)
-                    inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.IntimidatingCryKey.Value);
-                lastIntimidatingCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
-            }
-            catch (Exception ex)
-            {
-                if (showErrors)
-                    LogError($"Exception in {nameof(BuffUtil)}.{nameof(HandleIntimidatingCry)}: {ex.StackTrace}", 3f);
             }
         }
 
@@ -509,7 +439,7 @@ namespace BuffUtil
             }
         }
 
-        private bool? HasBuff(string buffName, ActorSkill skill = null)
+        private bool? HasBuff(string buffName)
         {
             if (buffs == null)
             {
@@ -518,10 +448,10 @@ namespace BuffUtil
                 return null;
             }
 
-            return buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0 && (skill == null || b.SkillIndex == skill.SlotIdentifier));
+            return buffs.Any(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0);
         }
 
-        private Buff GetBuff(string buffName, ActorSkill skill = null)
+        private Buff GetBuff(string buffName)
         {
             if (buffs == null)
             {
@@ -530,7 +460,7 @@ namespace BuffUtil
                 return null;
             }
 
-            return buffs.FirstOrDefault(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0 && (skill == null || b.SkillIndex == skill.SlotIdentifier));
+            return buffs.FirstOrDefault(b => string.Compare(b.Name, buffName, StringComparison.OrdinalIgnoreCase) == 0);
         }
 
         private ActorSkill GetUsableSkill(int skillSlotIndex)
