@@ -214,7 +214,7 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting Blood Rage", 1);
-                if (Core.Current.IsForeground)
+                if (GameController.IsForeGroundCache)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.BloodRageKey.Value);
                 lastBloodRageCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
@@ -328,10 +328,10 @@ namespace BuffUtil
                     return;
 
                 var attackSkill = GetUsableSkill(Settings.SeismicCryAttackConnectedSkill.Value);
-                if (attackSkill != null && attackSkill.IsUsingOrCharging)
+                if (attackSkill != null && attackSkill.IsUsing)
                     return;
 
-                if (Core.Current.IsForeground)
+                if (GameController.IsForeGroundCache)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.SeismicCryKey.Value);
                 lastSeismicCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
@@ -361,10 +361,10 @@ namespace BuffUtil
                     return;
 
                 var attackSkill = GetUsableSkill(Settings.IntimidatingCryAttackConnectedSkill.Value);
-                if (attackSkill != null && attackSkill.IsUsingOrCharging)
+                if (attackSkill != null && attackSkill.IsUsing)
                     return;
 
-                if (Core.Current.IsForeground)
+                if (GameController.IsForeGroundCache)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.IntimidatingCryKey.Value);
                 lastIntimidatingCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
@@ -406,7 +406,7 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting Molten Shell", 1);
-                if (Core.Current.IsForeground)
+                if (GameController.IsForeGroundCache)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode) Settings.MoltenShellKey.Value);
                 lastMoltenShellCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
@@ -452,7 +452,7 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting Phase Run", 1);
-                if (Core.Current.IsForeground)
+                if (GameController.IsForeGroundCache)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.PhaseRunKey.Value);
                 lastPhaseRunCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
@@ -532,7 +532,7 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting Golem", 1);
-                if (Core.Current.IsForeground)
+                if (GameController.IsForeGroundCache)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.FlameGolemKey.Value);
                 lastGolemCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
@@ -570,7 +570,7 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting Bone Offering", 1);
-                if (Core.Current.IsForeground)
+                if (GameController.IsForeGroundCache)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.BoneOfferingKey.Value);
                 lastBoneOfferingCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
@@ -611,7 +611,7 @@ namespace BuffUtil
 
                 if (Settings.Debug)
                     LogMessage("Casting General's Cry", 1);
-                if (Core.Current.IsForeground)
+                if (GameController.IsForeGroundCache)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.GeneralsCryKey.Value);
                 lastGeneralsCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
@@ -645,7 +645,7 @@ namespace BuffUtil
                     return;
                 }
 
-                if (Core.Current.IsForeground)
+                if (GameController.IsForeGroundCache)
                     inputSimulator.Keyboard.KeyPress((VirtualKeyCode)Settings.EnduringCryKey.Value);
                 lastEnduringCryCast = currentTime + TimeSpan.FromSeconds(rand.NextDouble(0, 0.2));
             }
