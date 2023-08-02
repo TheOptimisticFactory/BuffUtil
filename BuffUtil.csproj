@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <OutputPath>..\..\..\..\PoEHelper\Plugins\Compiled\BuffUtil\</OutputPath>
+    <OutputPath>..\..\..\..\..\PoEHelper\Plugins\Compiled\BuffUtil\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\Core.csproj">
