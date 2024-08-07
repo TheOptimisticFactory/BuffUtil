@@ -7,12 +7,13 @@
     <OutputType>Library</OutputType>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <OutputPath>..\..\..\..\..\PoEHelper\Plugins\Compiled\BuffUtil\</OutputPath>
+    <OutputPath>..\..\..\..\\PoEHelper\Plugins\Compiled\BuffUtil\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Core\Core.csproj">
+    <Reference Include="ExileCore">
+      <HintPath>..\..\..\..\PoeHelper\ExileCore.dll</HintPath>
       <Private>False</Private>
-    </ProjectReference>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\System.Windows.Forms.dll" />
